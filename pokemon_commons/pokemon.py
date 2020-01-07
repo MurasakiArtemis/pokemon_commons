@@ -7,6 +7,21 @@ from sqlalchemy import orm
 import sqlalchemy_utils
 
 Base = declarative.declarative_base()
+base_table_name = 'pokedex'
+
+table_names = {
+    'ability': f'{base_table_name}_abilities',
+    'type': f'{base_table_name}_type',
+    'egg_group': f'{base_table_name}_egg_group',
+    'generation': f'{base_table_name}_generation',
+    'region': f'{base_table_name}_region',
+    'pokemon_dex': f'{base_table_name}_pokemon_dex',
+    'pokemon': f'{base_table_name}_pokemon',
+    'form_ability': f'{base_table_name}_form_ability',
+    'form_type': f'{base_table_name}_form_type',
+    'mega_stone_picture': f'{base_table_name}_mega_stone_picture',
+    'form': f'{base_table_name}_form',
+}
 
 
 class AbilitySlot(enum.Enum):
@@ -22,6 +37,7 @@ class TypeSlot(enum.Enum):
 
 
 class Ability(Base):
+    __tablename__ = table_names.get('ability')
     id = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -33,6 +49,7 @@ class Ability(Base):
 
 
 class PokemonType(Base):
+    __tablename__ = table_names.get('type')
     id = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -44,6 +61,7 @@ class PokemonType(Base):
 
 
 class EggGroup(Base):
+    __tablename__ = table_names.get('egg_group')
     id = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -55,22 +73,25 @@ class EggGroup(Base):
 
 
 pokemon_egg_group = sqlalchemy.Table(
-    '',
+    f'{base_table_name}_{table_names.get("pokemon")}_{table_names.get("egg_group")}',
     Base.metadata,
     sqlalchemy.Column(
+        f'{table_names.get("egg_group")}_id',
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('egg_group.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("egg_group")}.id'),
         primary_key=True,
     ),
     sqlalchemy.Column(
+        f'{table_names.get("pokemon")}_id',
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('pokemon.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("pokemon")}.national_dex'),
         primary_key=True,
     ),
 )
 
 
 class Generation(Base):
+    __tablename__ = table_names.get('generation')
     id = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -82,6 +103,7 @@ class Generation(Base):
 
 
 class Region(Base):
+    __tablename__ = table_names.get('region')
     id = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -97,15 +119,16 @@ class Region(Base):
 
 
 class PokemonDex(Base):
+    __tablename__ = table_names.get('pokemon_dex')
     region_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('region.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("region")}.id'),
         primary_key=True,
     )
     region = orm.relationship('Region', uselist=False)
     pokemon_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('pokemon.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("pokemon")}.national_dex'),
         primary_key=True,
     )
     regional_dex = sqlalchemy.Column(
@@ -115,6 +138,7 @@ class PokemonDex(Base):
 
 
 class Pokemon(Base):
+    __tablename__ = table_names.get('pokemon')
     national_dex = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -171,7 +195,7 @@ class Pokemon(Base):
     )
     introduced_generation = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('generation.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("generation")}.id'),
     )
     base_friendship = sqlalchemy.Column(
         sqlalchemy.Integer(),
@@ -184,15 +208,16 @@ class Pokemon(Base):
 
 
 class FormAbility(Base):
+    __tablename__ = table_names.get('form_ability')
     ability_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('ability.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("ability")}.id'),
         primary_key=True,
     )
     ability = orm.relationship('Ability')
     form_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('form.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("form")}.id'),
         primary_key=True,
     )
     slot = sqlalchemy.Column(
@@ -207,15 +232,16 @@ class FormAbility(Base):
 
 
 class FormType(Base):
+    __tablename__ = table_names.get('form_type')
     pokemon_type_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('pokemon_type.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("type")}.id'),
         primary_key=True,
     )
     pokemon_type = orm.relationship('PokemonType')
     form_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('form.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("form")}.id'),
         primary_key=True,
     )
     slot = sqlalchemy.Column(
@@ -228,6 +254,7 @@ class FormType(Base):
 
 
 class MegaStonePicture(Base):
+    __tablename__ = table_names.get('mega_stone_picture')
     id = sqlalchemy.Column(
         sqlalchemy.Integer(),
         primary_key=True,
@@ -242,11 +269,16 @@ class MegaStonePicture(Base):
     )
     pokemon_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('pokemon.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("pokemon")}.national_dex'),
     )
 
 
 class Form(Base):
+    __tablename__ = table_names.get('form')
+    id = sqlalchemy.Column(
+        sqlalchemy.Integer(),
+        primary_key=True,
+    )
     name = sqlalchemy.Column(
         sqlalchemy.String(20),
         nullable=False,
@@ -275,5 +307,5 @@ class Form(Base):
     )
     pokemon_id = sqlalchemy.Column(
         sqlalchemy.Integer(),
-        sqlalchemy.ForeignKey('pokemon.id'),
+        sqlalchemy.ForeignKey(f'{table_names.get("pokemon")}.national_dex'),
     )
