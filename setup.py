@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pokemon_commons',
-    version='0.1',
+    version='0.2',
     author="Murasaki Artemis",
     author_email="murasaki_artemis@outlook.com",
     description="A package containing pokemon SQLAlchemy classes",
