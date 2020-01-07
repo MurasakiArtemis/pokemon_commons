@@ -19,4 +19,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    install_requires=[
+        'SQLAlchemy==1.3.11',
+        'SQLAlchemy-Utils==0.36.0',
+    ],
 )
